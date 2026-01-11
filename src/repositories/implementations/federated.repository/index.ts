@@ -5,6 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export * from './contracts'
-export * from './federated.repository'
-export * from './methods'
+export * from '../../contracts/federated.repository/contracts'
+export * from '../../contracts/federated.repository/federated.repository'
+export * from '../../contracts/federated.repository/methods'

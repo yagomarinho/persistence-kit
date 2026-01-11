@@ -90,7 +90,7 @@ export function SagaRepositoryProxy<R extends Repository>(
     batch,
   }
   return {
-    _t: SagaRepositoryURI,
+    tag: SagaRepositoryURI,
     meta: repo.meta,
     methods,
   } as ExtendedSagaRepository<R>

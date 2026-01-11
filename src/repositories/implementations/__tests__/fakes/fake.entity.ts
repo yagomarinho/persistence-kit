@@ -5,8 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { createEntity, DraftEntity, Entity, EntityMeta } from '@davna/core'
-import { concatenate } from '@davna/kernel'
+import {
+  createEntity,
+  DraftEntity,
+  Entity,
+  EntityMeta,
+} from '@yagomarinho/domain-kernel'
+import { concatenate } from '../../../../utils'
 
 export interface EnProps {
   name: string
@@ -20,9 +25,9 @@ export type EnURI = typeof EnURI
 export const EnVersion = 'v1'
 export type EnVersion = typeof EnVersion
 
-export interface En extends Entity<EnProps, EnURI, EnVersion> {}
+export type En = Entity<EnProps, EnURI, EnVersion>
 
-declare module '@davna/core' {
+declare module '@yagomarinho/domain-kernel' {
   interface EntityURItoKind {
     [EnURI]: En
   }

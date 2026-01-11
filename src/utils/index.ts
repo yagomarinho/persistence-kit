@@ -5,5 +5,5 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export * from './implementations'
-export * from './contracts'
+export * from './concatenate'
+export * from './is.object'
