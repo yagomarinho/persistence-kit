@@ -3,3 +3,8 @@ node_modules/
 
 # setup files
 .prettierrc.json
+
+# production files
+dist/
+build/
+tsconfig.tsbuildinfo
