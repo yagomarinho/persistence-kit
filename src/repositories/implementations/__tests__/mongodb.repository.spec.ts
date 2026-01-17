@@ -1,46 +1,45 @@
-import { Filter, QueryBuilder } from '@davna/core'
-import { MongoConverter, MongoRepository } from '../mongo.repository'
+import { createMongoRepository, MongoConverter } from '../mongo.repository'
 import { createEn, En, EnURI } from './fakes/fake.entity'
 import { MongoWithURIConfig } from '../mongo.repository/mongo.client.config'
 import { fakeIdempotencyKey } from './fakes/fake.idempotency.key'
-import { mongoEntityContext } from '../mongo.repository/mongo.entity.context'
+import { mongoEntityLifecycleManager } from '../mongo.repository/mongo.entity.lifecycle.manager'
+import { Filter, QueryBuilder } from '../../contracts'
 
 const converter: MongoConverter<En> = {
   to: ({
     props: { name, tags, value },
-    meta: { id, created_at, updated_at, _idempotency_key },
+    meta: { id, created_at, updated_at, idempotency_key },
   }) => ({
     id,
-    data: { name, tags, value, created_at, updated_at, _idempotency_key },
+    data: { name, tags, value, created_at, updated_at, idempotency_key },
   }),
   from: ({
     id,
-    data: { name, tags, value, created_at, updated_at, _idempotency_key },
+    data: { name, tags, value, created_at, updated_at, idempotency_key },
   }) =>
     createEn(
       { name, value, tags },
       {
-        _r: 'entity',
         id,
         created_at,
         updated_at,
-        _idempotency_key,
+        idempotency_key,
       },
     ),
 }
 
-const entityContext = mongoEntityContext()
+const lifecycleManager = mongoEntityLifecycleManager()
 const baseConfig: MongoWithURIConfig<En> = {
   uri: process.env.MONGODB_DEFAULT_CONNECT_URI || 'mongodb://localhost:27017',
   database: 'db',
   collection: 'en',
   converter,
   tag: EnURI,
-  entityContext,
+  lifecycleManager,
 }
 
 describe('mongo db repository', () => {
-  const repo = MongoRepository<En>(baseConfig)
+  const repo = createMongoRepository<En>(baseConfig)
   let entity: En
 
   beforeAll(async () => {
@@ -49,7 +48,7 @@ describe('mongo db repository', () => {
   })
 
   it('get() busca por _id e aplica converter.from', async () => {
-    entityContext.setIdempotency(fakeIdempotencyKey(1))
+    lifecycleManager.setIdempotencyKey(fakeIdempotencyKey(1))
 
     entity = await repo.methods.set(
       createEn({

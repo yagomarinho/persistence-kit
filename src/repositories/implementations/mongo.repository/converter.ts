@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Entity, Identifiable } from '@davna/core'
+import { Entity, Identifiable } from '@yagomarinho/domain-kernel'
 
 /**
  * Represents a raw MongoDB document with typed data.

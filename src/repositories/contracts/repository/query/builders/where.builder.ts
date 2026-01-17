@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { ValidObject } from '../../../../../types-utils'
+import type { ValidObject } from '@yagomarinho/ts-toolkit'
+import type { Entity } from '@yagomarinho/domain-kernel'
+
 import {
   ExtractValueByOperator,
   Where,
@@ -13,7 +15,6 @@ import {
   WhereLeaf,
   Operators,
 } from '../models'
-import { Entity } from '@yagomarinho/domain-kernel'
 import { ExtractSearchablePropertiesFromEntity } from './query.builder'
 
 /**

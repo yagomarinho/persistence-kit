@@ -11,7 +11,7 @@ import {
   Where,
   WhereComposite,
   WhereLeaf,
-} from '@davna/core'
+} from '../../contracts'
 import { mongoId } from './helpers'
 
 /**

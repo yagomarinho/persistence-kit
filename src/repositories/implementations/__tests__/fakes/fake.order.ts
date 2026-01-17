@@ -5,8 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { createEntity, DraftEntity, Entity, EntityMeta } from '@davna/core'
-import { concatenate } from '@davna/kernel'
+import {
+  CreateDraftEntityMetaInit,
+  createEntity,
+  createEntityMeta,
+  CreateEntityMetaInit,
+  DraftEntity,
+  Entity,
+} from '@yagomarinho/domain-kernel'
+import { concatenate } from '@yagomarinho/utils-toolkit'
 
 export interface OrderProps {
   value: number
@@ -20,21 +27,42 @@ export type OrderVersion = typeof OrderVersion
 
 export interface Order extends Entity<OrderProps, OrderURI, OrderVersion> {}
 
-declare module '@davna/core' {
+declare module '@yagomarinho/domain-kernel' {
   interface EntityURItoKind {
     [OrderURI]: Order
   }
 }
 
-export function createOrder(props: OrderProps): DraftEntity<Order>
-export function createOrder(props: OrderProps, meta: EntityMeta): Order
-export function createOrder({ value }: OrderProps, meta?: EntityMeta): any {
+export function createOrder(
+  props: OrderProps,
+  meta?: CreateDraftEntityMetaInit<OrderURI>,
+): DraftEntity<Order>
+export function createOrder(
+  props: OrderProps,
+  meta: CreateEntityMetaInit<OrderURI>,
+): Order
+export function createOrder(
+  { value }: OrderProps,
+  {
+    id,
+    idempotency_key = '',
+    updated_at,
+    created_at,
+  }: Partial<CreateEntityMetaInit<OrderURI>> = {},
+): DraftEntity<Order> | Order {
   return createEntity(
     OrderURI,
     OrderVersion,
     createOrder,
     { value },
-    meta as any,
+    createEntityMeta({
+      id,
+      tag: OrderURI,
+      version: OrderVersion,
+      idempotency_key,
+      updated_at,
+      created_at,
+    } as any),
   )
 }
 

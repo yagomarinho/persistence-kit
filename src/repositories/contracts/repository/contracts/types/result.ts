@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Resolvable } from '../../../../../types-utils'
+import { Resolvable } from '@yagomarinho/domain-kernel'
 
 /**
  * Represents the result of a repository operation.

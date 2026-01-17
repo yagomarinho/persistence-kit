@@ -6,11 +6,12 @@
  */
 
 import { google } from 'googleapis'
-import { Entity, Writable, Repository } from '@davna/core'
+import { Entity } from '@yagomarinho/domain-kernel'
 
 import { GSRepoConfig } from './gsr.config'
 import { serializeEntity } from './serialize.entity'
-import { GSRepoEntityContext } from './gsr.entity.context'
+import { GSRepoLifecycleManager } from './gsr.lifecycle.manager'
+import { Repository, Writable } from '../../contracts'
 
 /**
  * Resource identifier for Google Sheets repositories.
@@ -34,7 +35,7 @@ export type GoogleSheetsRepositoryURI = typeof GoogleSheetsRepositoryURI
  * - spreadsheetId: ID of the target Google Sheet
  * - range: cell range within the spreadsheet to operate on
  * - credentials: GCP service account credentials
- * - entityContext: provider for generating entity metadata
+ * - lifecycleManager: provider for generating entity metadata
  * - tag: entity tag (URI) for type identification
  *
  * Returns:
@@ -46,11 +47,11 @@ export function GoogleSheetsRepository<E extends Entity>({
   spreadsheetId,
   range,
   credentials,
-  entityContext: ec,
+  lifecycleManager: lf,
   tag,
 }: GSRepoConfig<E>): Writable<Repository<E, GoogleSheetsRepositoryURI>> {
-  const entityContext =
-    ec ?? GSRepoEntityContext({ credentials, spreadsheetId, range })
+  const lifecycleManager =
+    lf ?? GSRepoLifecycleManager({ credentials, spreadsheetId, range })
   const auth = new google.auth.GoogleAuth({
     credentials,
     scopes: [
@@ -62,7 +63,7 @@ export function GoogleSheetsRepository<E extends Entity>({
   const set: Repository<E>['methods']['set'] = async entity => {
     const sheets = google.sheets({ version: 'v4', auth })
 
-    const e = await entityContext.declareEntity(entity)
+    const e = await lifecycleManager.declareEntity(entity)
     const requestBody = {
       values: [serializeEntity(e)],
     }
@@ -84,8 +85,8 @@ export function GoogleSheetsRepository<E extends Entity>({
   }
 
   return {
-    _t: tag,
-    meta: { _r: 'repository', _t: GoogleSheetsRepositoryURI },
+    tag,
+    meta: { resource: 'repository', tag: GoogleSheetsRepositoryURI },
     methods: {
       set,
     },

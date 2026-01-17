@@ -5,8 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { DraftEntity, Entity, EntityMeta } from '@yagomarinho/domain-kernel'
-import { Resolvable } from '../types-utils'
+import {
+  CreateMetaParams,
+  DraftEntity,
+  Entity,
+  EntityMeta,
+  EntityURIS,
+  Idempotent,
+  Resolvable,
+  VersionOfEntity,
+} from '@yagomarinho/domain-kernel'
 
 /**
  * Parameters used to create entity metadata.
@@ -20,12 +28,11 @@ import { Resolvable } from '../types-utils'
  * - idempotency_key: stable key used to ensure idempotent creation
  */
 
-export interface CreateMetaParams {
-  id?: string
-  created_at?: Date
-  updated_at?: Date
-  _idempotency_key?: string
-}
+export type ExtendedCreateMetaParams<T extends EntityURIS> = Omit<
+  CreateMetaParams<T>,
+  'idempotency_key'
+> &
+  Partial<Idempotent>
 
 /**
  * Entity context facade.
@@ -51,7 +58,9 @@ export interface LifecycleManager {
    * defaults and invariants to produce a resolvable
    * EntityMeta instance.
    */
-  createMeta: (data?: CreateMetaParams) => Resolvable<EntityMeta>
+  createMeta: <T extends EntityURIS>(
+    data: ExtendedCreateMetaParams<T>,
+  ) => Resolvable<EntityMeta<T, VersionOfEntity<T>>>
 
   /**
    * Declare and materialize an entity.

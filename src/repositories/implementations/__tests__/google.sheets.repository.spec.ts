@@ -1,12 +1,12 @@
 import { google } from 'googleapis'
 
-import { EntityContext, EntityMeta } from '@davna/core'
-
 import {
   GoogleSheetsRepository,
   GCPCredentials,
 } from '../google.sheets.repository'
-import { createEn, En, EnURI } from './fakes/fake.entity'
+import { createEn, En, EnURI, EnVersion } from './fakes/fake.entity'
+import { LifecycleManager } from '../../../lifecycle.managers'
+import { createEntityMeta, EntityMeta } from '@yagomarinho/domain-kernel'
 
 jest.setTimeout(20_000)
 
@@ -62,11 +62,11 @@ describe('GoogleSheetsRepository — integration', () => {
   const range = process.env.GCP_LEAD_SPREADSHEET_RANGE ?? ''
   const spreadsheetId = process.env.GCP_LEAD_SPREADSHEET_ID ?? ''
 
-  const entityContext = {
+  const lifecycleManager = {
     declareEntity: jest.fn(),
     createMeta: jest.fn(),
     validateEntity: jest.fn().mockImplementation(() => true),
-  } as any as jest.Mocked<EntityContext>
+  } as any as jest.Mocked<LifecycleManager>
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -81,18 +81,19 @@ describe('GoogleSheetsRepository — integration', () => {
       credentials,
       range,
       spreadsheetId,
-      entityContext,
+      lifecycleManager,
       tag: EnURI,
     })
 
     const now = new Date()
-    const meta: EntityMeta = {
+    const meta: EntityMeta = createEntityMeta({
       id: `itest-${now.getTime()}}`,
-      _r: 'entity',
       created_at: now,
       updated_at: now,
-      _idempotency_key: '',
-    }
+      idempotency_key: '',
+      tag: EnURI,
+      version: EnVersion,
+    })
 
     const entity = createEn({
       name: 'Integration Test',
@@ -100,8 +101,8 @@ describe('GoogleSheetsRepository — integration', () => {
       tags: ['some tag'],
     })
 
-    entityContext.declareEntity.mockResolvedValueOnce(
-      entity._b(entity.props, meta),
+    lifecycleManager.declareEntity.mockResolvedValueOnce(
+      entity.builder(entity.props, meta),
     )
 
     const result = await repo.methods.set(entity)

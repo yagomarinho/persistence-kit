@@ -6,12 +6,14 @@
  */
 
 import {
+  CreateDraftEntityMetaInit,
   createEntity,
+  createEntityMeta,
+  CreateEntityMetaInit,
   DraftEntity,
   Entity,
-  EntityMeta,
 } from '@yagomarinho/domain-kernel'
-import { concatenate } from '../../../../utils'
+import { concatenate } from '@yagomarinho/utils-toolkit'
 
 export interface EnProps {
   name: string
@@ -33,18 +35,36 @@ declare module '@yagomarinho/domain-kernel' {
   }
 }
 
-export function createEn({ name, value, tags }: EnProps): DraftEntity<En>
-export function createEn({ name, value, tags }: EnProps, meta: EntityMeta): En
 export function createEn(
   { name, value, tags }: EnProps,
-  meta?: EntityMeta,
-): En {
+  meta?: CreateDraftEntityMetaInit<EnURI>,
+): DraftEntity<En>
+export function createEn(
+  { name, value, tags }: EnProps,
+  meta: CreateEntityMetaInit<EnURI>,
+): En
+export function createEn(
+  { name, value, tags }: EnProps,
+  {
+    id,
+    idempotency_key = '',
+    created_at,
+    updated_at,
+  }: Partial<CreateEntityMetaInit<EnURI>> = {},
+): DraftEntity<En> | En {
   return createEntity(
     EnURI,
     EnVersion,
     createEn,
     { name, value, tags },
-    meta as any,
+    createEntityMeta({
+      id,
+      idempotency_key,
+      tag: EnURI,
+      version: EnVersion,
+      created_at,
+      updated_at,
+    } as any),
   )
 }
 

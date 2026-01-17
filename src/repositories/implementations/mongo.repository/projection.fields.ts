@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Entity } from '@davna/core'
+import { Entity } from '@yagomarinho/domain-kernel'
 
 /*
  * Represents a MongoDB projection for an entity.

@@ -6,6 +6,7 @@
  */
 
 import { Entity } from '@yagomarinho/domain-kernel'
+
 import { RepoInitilizer } from './repo.initializer'
 
 export type EntitiesOf<
@@ -18,9 +19,9 @@ export type EntitiesOf<
       : never
     : never
   : U extends [infer First, ...infer Rest]
-  ? First extends RepoInitilizer<infer F>
-    ? Rest extends RepoInitilizer<F>[]
-      ? EntitiesOf<Rest, E | F>
+    ? First extends RepoInitilizer<infer F>
+      ? Rest extends RepoInitilizer<F>[]
+        ? EntitiesOf<Rest, E | F>
+        : never
       : never
     : never
-  : never

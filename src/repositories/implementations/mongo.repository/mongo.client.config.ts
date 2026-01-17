@@ -5,11 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Entity, EntityContext, ExtractEntityTag } from '@davna/core'
-
 import { MongoClient } from 'mongodb'
+import { Entity } from '@yagomarinho/domain-kernel'
+
 import { ProjectionFields } from './projection.fields'
 import { MongoConverter } from './converter'
+import { ExtractEntityTag } from '../../contracts'
+import { LifecycleManager } from '../../../lifecycle.managers'
 
 /**
  * Base configuration for a MongoDB repository.
@@ -45,7 +47,7 @@ export interface MongoConfigBaseProps<E extends Entity> {
    * If not provided, the system can either manage entity metadata automatically
    * or allow the database to handle it directly.
    */
-  entityContext?: EntityContext
+  lifecycleManager?: LifecycleManager
 }
 
 /**

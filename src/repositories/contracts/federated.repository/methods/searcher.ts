@@ -45,9 +45,9 @@ export interface FederatedSearcher<E extends Entity> {
    * Applies the provided query against the searchable
    * properties extracted from the entity type.
    */
-  (query: Query<ExtractSearchablePropertiesFromEntity<E>>): RepositoryResult<
-    QueryResult<E>
-  >
+  (
+    query: Query<ExtractSearchablePropertiesFromEntity<E>>,
+  ): RepositoryResult<QueryResult<E>>
 
   /**
    * Execute a tagged federated search.

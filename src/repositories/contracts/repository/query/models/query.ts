@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { ValidObject } from '../../../../../types-utils'
+import type { ValidObject } from '@yagomarinho/ts-toolkit'
+
 import { Sort } from './sort'
 import { Where } from './where'
 

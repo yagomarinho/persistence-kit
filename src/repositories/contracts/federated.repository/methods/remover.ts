@@ -33,5 +33,5 @@ export interface FederatedRemover {
    * removal operation and must remain stable across retries.
    */
 
-  (id: string, idempontecy_key: string): RepositoryResult<void>
+  (id: string): RepositoryResult<void>
 }

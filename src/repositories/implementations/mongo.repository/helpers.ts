@@ -6,6 +6,7 @@
  */
 
 import { Document, MongoClient, ObjectId } from 'mongodb'
+
 import { MongoDocument } from './converter'
 
 /**

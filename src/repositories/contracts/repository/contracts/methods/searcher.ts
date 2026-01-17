@@ -6,6 +6,7 @@
  */
 
 import { Entity } from '@yagomarinho/domain-kernel'
+
 import { ExtractSearchablePropertiesFromEntity, Query } from '../../query'
 import { RepositoryResult } from '../types'
 
@@ -31,7 +32,7 @@ export interface QueryResult<E extends Entity> {
  */
 
 export interface RepositorySearcher<E extends Entity> {
-  (q?: Query<ExtractSearchablePropertiesFromEntity<E>>): RepositoryResult<
-    QueryResult<E>
-  >
+  (
+    q?: Query<ExtractSearchablePropertiesFromEntity<E>>,
+  ): RepositoryResult<QueryResult<E>>
 }

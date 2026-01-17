@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Entity } from '@davna/core'
+import type { Entity } from '@yagomarinho/domain-kernel'
 
 /**
  * Serializes an entity into an array of JSON strings.

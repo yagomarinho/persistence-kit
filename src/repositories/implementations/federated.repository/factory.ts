@@ -5,8 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { DraftEntity } from '@yagomarinho/domain-kernel'
-import { Resolvable } from '../../../types-utils'
+import { DraftEntity, Resolvable } from '@yagomarinho/domain-kernel'
 import {
   Batch,
   BatchItem,
@@ -31,8 +30,8 @@ export function createFederatedRepository<
 }: FedConfig<U, T>): FederatedRepository<EntitiesOf<U>, T> {
   const repoByTag: RepositoryPool<EntitiesOf<U>> = new Map(
     repositories.map(init => {
-      const repo = init({ entityContext: IDContext })
-      return [repo._t, repo]
+      const repo = init({ lifecycleManager: IDContext })
+      return [repo.tag, repo]
     }),
   )
 
@@ -89,29 +88,32 @@ export function createFederatedRepository<
   const batch: FederatedRepository<
     EntitiesOf<U>
   >['methods']['batch'] = async b => {
-    const orderedBatch = await b.reduce(async (acc, item) => {
-      if (item.type === 'upsert') {
-        if (acc instanceof Promise) {
-          return acc.then(mapped => {
-            const tag = item.data._t
-            return setBatchItem(mapped, tag, item)
-          })
-        }
-        return setBatchItem(acc, item.data._t, item)
-      } else {
-        if (acc instanceof Promise) {
-          return acc.then(async mapped => {
-            const tag = await getTagFromId(item.data, IDContext)
-            if (!tag) return mapped
-            return setBatchItem(mapped, tag, item)
-          })
-        }
-        const tag = await getTagFromId(item.data, IDContext)
-        if (!tag) return acc
+    const orderedBatch = await b.reduce(
+      async (acc, item) => {
+        if (item.type === 'upsert') {
+          if (acc instanceof Promise) {
+            return acc.then(mapped => {
+              const tag = item.data._t
+              return setBatchItem(mapped, tag, item)
+            })
+          }
+          return setBatchItem(acc, item.data._t, item)
+        } else {
+          if (acc instanceof Promise) {
+            return acc.then(async mapped => {
+              const tag = await getTagFromId(item.data, IDContext)
+              if (!tag) return mapped
+              return setBatchItem(mapped, tag, item)
+            })
+          }
+          const tag = await getTagFromId(item.data, IDContext)
+          if (!tag) return acc
 
-        return setBatchItem(acc, tag, item)
-      }
-    }, new Map() as Resolvable<Map<string, Batch<EntitiesOf<U>>>>)
+          return setBatchItem(acc, tag, item)
+        }
+      },
+      new Map() as Resolvable<Map<string, Batch<EntitiesOf<U>>>>,
+    )
 
     const results = await Promise.all(
       [...orderedBatch.entries()].map(async ([tag, orderedB]) => {

@@ -5,8 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Entity, EntityContext, ExtractEntityTag } from '@davna/core'
+import type { Entity } from '@yagomarinho/domain-kernel'
+
 import { GCPCredentials } from './gcp.credentials'
+import { LifecycleManager } from '../../../lifecycle.managers'
+import { ExtractEntityTag } from '../../contracts'
 
 /**
  * Configuration interface for a Google Sheets repository.
@@ -28,7 +31,7 @@ export interface GSRepoConfig<E extends Entity> {
   range: string
 
   /** Context provider for entity metadata and validation */
-  entityContext?: EntityContext
+  lifecycleManager?: LifecycleManager
 
   /** Tag identifying the kind of entity stored in this repository */
   tag: ExtractEntityTag<E>

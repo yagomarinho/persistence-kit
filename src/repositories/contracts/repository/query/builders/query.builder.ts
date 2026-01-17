@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { Merge, ValidObject } from '../../../../../types-utils'
+import type { Merge, ValidObject } from '@yagomarinho/ts-toolkit'
+import type { Entity } from '@yagomarinho/domain-kernel'
 
 import {
   Sort,
@@ -24,7 +25,6 @@ import {
   withWhere,
   withWhereLeaf,
 } from '../helpers'
-import { Entity } from '@yagomarinho/domain-kernel'
 
 /**
  * Function signature for applying filter conditions

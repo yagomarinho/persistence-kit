@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { ValidObject } from '../../../../../types-utils'
+import type { ValidObject } from '@yagomarinho/ts-toolkit'
+
 import { ArrayOperators, Operators, RangeOperators } from './operators'
 import { Range } from './range'
 
@@ -31,12 +32,12 @@ export type ExtractValueByOperator<
       : never
     : A[K][]
   : O extends RangeOperators
-  ? Range<A[K]>
-  : O extends 'array-contains'
-  ? A[K] extends Array<infer T>
-    ? T
-    : never
-  : A[K]
+    ? Range<A[K]>
+    : O extends 'array-contains'
+      ? A[K] extends Array<infer T>
+        ? T
+        : never
+      : A[K]
 
 /**
  * Represents a condition applied to a single field in a query.

@@ -1,27 +1,21 @@
-import {
-  Batch,
-  EntityContext,
-  Filter,
-  QueryBuilder,
-  Repository,
-} from '@davna/core'
-
 import { InMemoryRepository } from '../in.memory.repository'
 import { createEn, En, EnURI, setName } from './fakes/fake.entity'
 import { fakeIdempotencyKey } from './fakes/fake.idempotency.key'
-import { createEntityContext } from '../in.memory.repository/create.entity.context'
+import { createInMemoryLifecycleManager } from '../in.memory.repository/in.memory.lifecycle.manager'
+import { LifecycleManager } from '../../../lifecycle.managers'
+import { Batch, Filter, QueryBuilder, Repository } from '../../contracts'
 
 describe('InMemoryRepository', () => {
-  let entityContext: EntityContext
+  let lifecycleManager: LifecycleManager
   let repo: Repository<En>
 
   beforeEach(() => {
-    entityContext = createEntityContext()
-    repo = InMemoryRepository<En>({ entityContext, tag: EnURI })
+    lifecycleManager = createInMemoryLifecycleManager()
+    repo = InMemoryRepository<En>({ lifecycleManager, tag: EnURI })
   })
 
   it('should create a new entity without id and assign id/created_at/updated_at', async () => {
-    entityContext.setIdempotency(fakeIdempotencyKey(1))
+    lifecycleManager.setIdempotencyKey(fakeIdempotencyKey(1))
 
     const en = createEn({ name: 'John', value: 10, tags: [] })
     const saved = await repo.methods.set(en)
@@ -29,7 +23,7 @@ describe('InMemoryRepository', () => {
     expect(saved.meta.id).toBe('0')
     expect(saved.meta.created_at).toEqual(expect.any(Date))
     expect(saved.meta.updated_at).toEqual(expect.any(Date))
-    expect(saved.meta._idempotency_key).toBe(fakeIdempotencyKey(1))
+    expect(saved.meta.idempotency_key).toBe(fakeIdempotencyKey(1))
 
     const fetched = await repo.methods.get(saved.meta.id)
     expect(fetched).toEqual(saved)
@@ -48,9 +42,12 @@ describe('InMemoryRepository', () => {
           _idempotency_key: '',
         }),
       ),
-    } as any as jest.Mocked<EntityContext>
+    } as any as jest.Mocked<LifecycleManager>
 
-    repo = InMemoryRepository<En>({ entityContext: customContext, tag: EnURI })
+    repo = InMemoryRepository<En>({
+      lifecycleManager: customContext,
+      tag: EnURI,
+    })
 
     const a = await repo.methods.set(
       createEn({ name: 'John', value: 10, tags: [] }),

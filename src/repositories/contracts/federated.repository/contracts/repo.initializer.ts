@@ -6,11 +6,12 @@
  */
 
 import { Entity } from '@yagomarinho/domain-kernel'
+
 import { Repository } from '../../repository'
 import { LifecycleManager } from '../../../../lifecycle.managers'
 
 export interface InitializerConfig {
-  lifecycle: LifecycleManager
+  lifecycleManager: LifecycleManager
 }
 
 export interface RepoInitilizer<E extends Entity> {

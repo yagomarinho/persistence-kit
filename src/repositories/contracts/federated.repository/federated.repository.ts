@@ -6,6 +6,7 @@
  */
 
 import { Entity } from '@yagomarinho/domain-kernel'
+
 import { Repository } from '../repository'
 import { FederatedRemover, FederatedSearcher, FederatedSetter } from './methods'
 

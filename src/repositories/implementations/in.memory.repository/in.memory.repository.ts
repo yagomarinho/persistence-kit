@@ -5,15 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {
-  Entity,
-  Repository,
-  EntityContext,
-  QueryBuilder,
-  ExtractEntityTag,
-} from '@davna/core'
+import type { Entity } from '@yagomarinho/domain-kernel'
+
 import { applySorts, applyWhere } from './query'
-import { createEntityContext } from './create.entity.context'
+import { createInMemoryLifecycleManager } from './in.memory.lifecycle.manager'
+import { LifecycleManager } from '../../../lifecycle.managers'
+import { ExtractEntityTag, QueryBuilder, Repository } from '../../contracts'
 
 /**
  * Resource identifier for in-memory repositories.
@@ -35,7 +32,7 @@ export type InMemoryRepositoryURI = typeof InMemoryRepositoryURI
 
 export interface InMemoryConfig<E extends Entity> {
   repository?: E[]
-  entityContext?: EntityContext
+  lifecycleManager?: LifecycleManager
   tag?: ExtractEntityTag<E>
 }
 
@@ -54,7 +51,7 @@ export interface InMemoryConfig<E extends Entity> {
 
 export function InMemoryRepository<E extends Entity>({
   repository = [],
-  entityContext = createEntityContext(),
+  lifecycleManager = createInMemoryLifecycleManager(),
   tag = 'entity' as never,
 }: InMemoryConfig<E> = {}): Repository<E, InMemoryRepositoryURI> {
   let repo = [...repository]
@@ -63,7 +60,7 @@ export function InMemoryRepository<E extends Entity>({
     repo.find(el => el.meta.id === id)
 
   const set: Repository<E>['methods']['set'] = async entity => {
-    const e = await entityContext.declareEntity(entity)
+    const e = await lifecycleManager.declareEntity(entity)
 
     repo = repo.filter(el => el.meta.id !== e.meta.id).concat(e)
 
@@ -110,7 +107,7 @@ export function InMemoryRepository<E extends Entity>({
     const entities = await Promise.all(
       b
         .filter(item => item.type === 'upsert')
-        .map(async el => await entityContext.declareEntity(el.data)),
+        .map(async el => await lifecycleManager.declareEntity(el.data)),
     )
 
     const entities_id = entities.map(en => en.meta.id)
@@ -126,10 +123,10 @@ export function InMemoryRepository<E extends Entity>({
   }
 
   return {
-    _t: tag,
+    tag,
     meta: {
-      _r: 'repository',
-      _t: InMemoryRepositoryURI,
+      resource: 'repository',
+      tag: InMemoryRepositoryURI,
     },
     methods: {
       get,

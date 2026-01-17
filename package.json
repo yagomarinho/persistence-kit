@@ -1,14 +1,16 @@
 {
   "name": "@yagomarinho/persistence-kit",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "index.ts",
   "types": "index.ts",
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./google.sheets": "./src/repositories/implementations/google.sheets.repository/index.ts",
+    "./in.memory": "./src/repositories/implementations/in.memory.repository/index.ts",
+    "./mongodb": "./src/repositories/implementations/mongo.repository/index.ts"
   },
   "files": [
     "src"
@@ -24,12 +26,26 @@
     "type": "git",
     "url": "git+https://github.com/yagomarinho/persistence-kit.git"
   },
+  "peerDependencies": {
+    "googleapis": "^170.1.0",
+    "mongodb": "^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "googleapis": {
+      "optional": true
+    },
+    "mongodb": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@yagomarinho/domain-kernel": ">=0.2.0",
+    "@yagomarinho/ts-toolkit": ">=0.2.0",
+    "@yagomarinho/utils-toolkit": ">=0.2.0"
+  },
   "devDependencies": {
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
-  },
-  "peerDependencies": {
-    "@yagomarinho/domain-kernel": ">=0.1.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

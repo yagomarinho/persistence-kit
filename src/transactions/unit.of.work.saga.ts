@@ -6,6 +6,7 @@
  */
 
 import { Tag } from '@yagomarinho/domain-kernel'
+
 import { Repository } from '../repositories'
 import { UnitOfWork } from './unit.of.work'
 
@@ -13,17 +14,24 @@ export interface Compensation {
   (): any
 }
 
-export interface UnitOfWorkSaga extends Pick<UnitOfWork, 'rollback'> {
+export interface UnitOfWorkSaga extends Pick<
+  UnitOfWork,
+  'commit' | 'rollback'
+> {
   readonly registerCompensation: (compensation: Compensation) => any
 }
 
 export function UnitOfWorkSaga(): UnitOfWorkSaga {
-  const compensations: Compensation[] = []
+  let compensations: Compensation[] = []
 
   const registerCompensation: UnitOfWorkSaga['registerCompensation'] =
     compensation => {
       compensations.push(compensation)
     }
+
+  const commit: UnitOfWorkSaga['commit'] = async () => {
+    compensations = []
+  }
 
   const rollback: UnitOfWorkSaga['rollback'] = async () => {
     await compensations
@@ -37,6 +45,7 @@ export function UnitOfWorkSaga(): UnitOfWorkSaga {
 
   return {
     registerCompensation,
+    commit,
     rollback,
   }
 }
@@ -44,7 +53,7 @@ export function UnitOfWorkSaga(): UnitOfWorkSaga {
 export const SagaRepositoryURI = 'saga.repository'
 export type SagaRepositoryURI = typeof SagaRepositoryURI
 
-export type ExtendedSagaRepository<R extends Repository> = Omit<R, '_t'> &
+export type ExtendedSagaRepository<R extends Repository> = Omit<R, 'tag'> &
   Tag<SagaRepositoryURI>
 
 export function SagaRepositoryProxy<R extends Repository>(
@@ -55,7 +64,7 @@ export function SagaRepositoryProxy<R extends Repository>(
   const query: R['methods']['query'] = repo.methods.query
 
   const set: R['methods']['set'] = async entity => {
-    const previous = entity.meta ? await get(entity.meta.id) : undefined
+    const previous = entity.meta.id ? await get(entity.meta.id) : undefined
 
     const next = await repo.methods.set(entity)
 

@@ -6,10 +6,12 @@
  */
 
 import {
+  CreateDraftEntityMetaInit,
   createEntity,
+  createEntityMeta,
+  CreateEntityMetaInit,
   DraftEntity,
   Entity,
-  EntityMeta,
 } from '@yagomarinho/domain-kernel'
 
 export const IDURI = 'id'
@@ -22,29 +24,43 @@ export interface IdProps {
   entity_tag: string
 }
 
-export interface ID extends Entity<IdProps, IDURI, IDVersion> {}
+export type ID = Entity<IdProps, IDURI, IDVersion>
 
 declare module '@yagomarinho/domain-kernel' {
   interface EntityURItoKind {
     [IDURI]: ID
   }
+  interface BuildableURItoKind {
+    [IDURI]: ID
+  }
 }
 
-export function createID(props: IdProps): DraftEntity<ID>
 export function createID(
   props: IdProps,
-  meta: undefined,
-  _version: IDVersion,
+  meta?: CreateDraftEntityMetaInit<IDURI>,
 ): DraftEntity<ID>
-export function createID(
-  props: IdProps,
-  meta: EntityMeta,
-  _version?: IDVersion,
-): ID
+export function createID(props: IdProps, meta: CreateEntityMetaInit<IDURI>): ID
 export function createID(
   { entity_tag }: IdProps,
-  meta?: EntityMeta,
-  _version: IDVersion = IDVersion,
-): ID {
-  return createEntity(IDURI, _version, createID, { entity_tag }, meta as any)
+  {
+    id,
+    idempotency_key = '',
+    created_at,
+    updated_at,
+  }: Partial<CreateEntityMetaInit<IDURI>> = {},
+): DraftEntity<ID> | ID {
+  return createEntity(
+    IDURI,
+    IDVersion,
+    createID,
+    { entity_tag },
+    createEntityMeta({
+      id,
+      idempotency_key,
+      created_at,
+      updated_at,
+      tag: IDURI,
+      version: IDVersion,
+    } as any),
+  )
 }

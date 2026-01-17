@@ -6,6 +6,7 @@
  */
 
 import { Entity } from '@yagomarinho/domain-kernel'
+
 import { Batch, BatchResult } from '../../batch'
 import { RepositoryResult } from '../types'
 

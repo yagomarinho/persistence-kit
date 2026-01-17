@@ -5,5 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+export * from './connection.status'
 export * from './converter'
+export * from './factory'
+export * from './mongo.client.config'
+export * from './mongo.entity.lifecycle.manager'
 export * from './mongo.repository'

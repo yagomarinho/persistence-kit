@@ -6,6 +6,7 @@
  */
 
 import { DraftEntity, Entity } from '@yagomarinho/domain-kernel'
+
 import { RepositoryResult } from '../../repository'
 
 /**

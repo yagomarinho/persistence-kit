@@ -1,26 +1,33 @@
-import { QueryBuilder, Repository } from '@davna/core'
-import { createID } from '@davna/kernel'
+import { QueryBuilder, type Repository } from '../../contracts'
 
 import { InMemoryRepository } from '../in.memory.repository'
-import { FederatedRepository, IDContext } from '../federated.repository'
+import { IDContext } from '../federated.repository'
+import { createFederatedRepository } from '../federated.repository/factory'
+import { createID } from '../../../lifecycle.managers'
 
 import { createUser, User, UserURI } from './fakes/fake.user'
 import { createOrder, Order, OrderURI } from './fakes/fake.order'
 import { fakeIdempotencyKey } from './fakes/fake.idempotency.key'
+import { createEntityMeta, Entity } from '@yagomarinho/domain-kernel'
 
-describe('FederatedRepository', () => {
+describe('federated repository testing', () => {
   let userRepo: Repository<User>
   let orderRepo: Repository<Order>
   let i = 100
 
   const IDContext = {
-    declareEntity: jest.fn().mockImplementation(entity =>
-      entity._b(entity.props, {
-        _r: 'entity',
-        id: `u-${i++}`,
-        created_at: new Date(),
-        updated_at: new Date(),
-      }),
+    declareEntity: jest.fn().mockImplementation((entity: Entity) =>
+      entity.builder(
+        entity.props,
+        createEntityMeta({
+          id: `u-${i++}`,
+          created_at: new Date(),
+          updated_at: new Date(),
+          idempotency_key: fakeIdempotencyKey(1),
+          tag: UserURI,
+          version: 'v1',
+        }) as any,
+      ),
     ),
     getIDEntity: jest.fn(),
   } as any as jest.Mocked<IDContext>
@@ -32,11 +39,11 @@ describe('FederatedRepository', () => {
     jest.clearAllMocks()
   })
 
-  const repo = FederatedRepository({
+  const repo = createFederatedRepository({
     repositories: [
       init => {
         orderRepo = InMemoryRepository({
-          entityContext: init.entityContext,
+          lifecycleManager: init.lifecycleManager,
           tag: OrderURI,
         })
 
@@ -44,7 +51,7 @@ describe('FederatedRepository', () => {
       },
       init => {
         userRepo = InMemoryRepository({
-          entityContext: init.entityContext,
+          lifecycleManager: init.lifecycleManager,
           tag: UserURI,
         })
 
@@ -77,15 +84,12 @@ describe('FederatedRepository', () => {
 
     IDContext.getIDEntity.mockResolvedValue(
       createID(
-        {
-          entity_tag: UserURI,
-        },
+        { entity_tag: UserURI },
         {
           id: user.meta.id,
-          _r: 'entity',
           created_at: new Date(),
           updated_at: new Date(),
-          _idempotency_key: fakeIdempotencyKey(1),
+          idempotency_key: fakeIdempotencyKey(1),
         },
       ),
     )
@@ -108,15 +112,12 @@ describe('FederatedRepository', () => {
 
     IDContext.getIDEntity.mockResolvedValue(
       createID(
-        {
-          entity_tag: UserURI,
-        },
+        { entity_tag: UserURI },
         {
           id: user.meta.id,
-          _r: 'entity',
           created_at: new Date(),
           updated_at: new Date(),
-          _idempotency_key: fakeIdempotencyKey(1),
+          idempotency_key: fakeIdempotencyKey(1),
         },
       ),
     )

@@ -34,8 +34,7 @@ export type RepositoryURI = typeof RepositoryURI
  */
 
 export interface RepositoryMeta<T extends string>
-  extends Resource<RepositoryURI>,
-    Tag<T> {}
+  extends Resource<RepositoryURI>, Tag<T> {}
 
 /**
  * Core repository operations.

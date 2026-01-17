@@ -5,8 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { createEntity, DraftEntity, Entity, EntityMeta } from '@davna/core'
-import { concatenate } from '@davna/kernel'
+import {
+  CreateDraftEntityMetaInit,
+  createEntity,
+  createEntityMeta,
+  CreateEntityMetaInit,
+  DraftEntity,
+  Entity,
+} from '@yagomarinho/domain-kernel'
+import { concatenate } from '@yagomarinho/utils-toolkit'
 
 export interface UserProps {
   name: string
@@ -20,16 +27,43 @@ export type UserVersion = typeof UserVersion
 
 export interface User extends Entity<UserProps, UserURI, UserVersion> {}
 
-declare module '@davna/core' {
+declare module '@yagomarinho/domain-kernel' {
   interface EntityURItoKind {
     [UserURI]: User
   }
 }
 
-export function createUser(props: UserProps): DraftEntity<User>
-export function createUser(props: UserProps, meta: EntityMeta): User
-export function createUser({ name }: UserProps, meta?: EntityMeta): any {
-  return createEntity(UserURI, UserVersion, createUser, { name }, meta as any)
+export function createUser(
+  props: UserProps,
+  meta?: CreateDraftEntityMetaInit<UserURI>,
+): DraftEntity<User>
+export function createUser(
+  props: UserProps,
+  meta: CreateEntityMetaInit<UserURI>,
+): User
+export function createUser(
+  { name }: UserProps,
+  {
+    id,
+    idempotency_key = '',
+    created_at,
+    updated_at,
+  }: Partial<CreateEntityMetaInit<UserURI>> = {},
+): any {
+  return createEntity(
+    UserURI,
+    UserVersion,
+    createUser,
+    { name },
+    createEntityMeta({
+      id,
+      idempotency_key,
+      tag: UserURI,
+      version: UserVersion,
+      created_at,
+      updated_at,
+    } as any),
+  )
 }
 
 export function setName(

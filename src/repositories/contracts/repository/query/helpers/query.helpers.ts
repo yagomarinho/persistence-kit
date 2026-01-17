@@ -12,6 +12,9 @@
  * is always structurally complete.
  */
 
+import type { ValidObject } from '@yagomarinho/ts-toolkit'
+import { concatenate } from '@yagomarinho/utils-toolkit'
+
 import {
   ExtractValueByOperator,
   Operators,
@@ -21,8 +24,6 @@ import {
 } from '../models'
 
 import { createWhereLeaf } from '../builders'
-import { ValidObject } from '../../../../../types-utils'
-import { concatenate } from '../../../../../utils'
 
 const DEFAULT_WHERE = {} as Where<any>
 const DEFAULT_SORT = []

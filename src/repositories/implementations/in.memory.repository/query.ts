@@ -5,8 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { Entity } from '@yagomarinho/domain-kernel'
+
 import {
-  Entity,
   ExtractSearchablePropertiesFromEntity,
   isWhereComposite,
   Operators,
@@ -15,7 +16,7 @@ import {
   Where,
   WhereComposite,
   WhereLeaf,
-} from '@davna/core'
+} from '../../contracts'
 
 /**
  * Applies sorting rules to an array of entities.
