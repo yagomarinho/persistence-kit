@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { isObject } from '@yagomarinho/utils-toolkit'
+import { isObject } from '@yagomarinho/utils-toolkit/is.object'
 
 import { Where, WhereComposite, WhereLeaf } from '../models'
 

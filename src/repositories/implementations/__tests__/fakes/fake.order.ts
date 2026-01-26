@@ -13,7 +13,7 @@ import {
   DraftEntity,
   Entity,
 } from '@yagomarinho/domain-kernel'
-import { concatenate } from '@yagomarinho/utils-toolkit'
+import { concatenate } from '@yagomarinho/utils-toolkit/concatenate'
 
 export interface OrderProps {
   value: number

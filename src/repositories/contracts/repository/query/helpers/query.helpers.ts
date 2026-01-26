@@ -13,7 +13,7 @@
  */
 
 import type { ValidObject } from '@yagomarinho/ts-toolkit'
-import { concatenate } from '@yagomarinho/utils-toolkit'
+import { concatenate } from '@yagomarinho/utils-toolkit/concatenate'
 
 import {
   ExtractValueByOperator,
